@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] — SecureDocs</title>
+    <title>@ViewData["Title"]IDOR</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #333; }
@@ -43,7 +43,7 @@
 </head>
 <body>
     <nav>
-        <span class="brand">SecureDocs</span>
+        <span class="brand">IDOR</span>
         @if (User.Identity?.IsAuthenticated == true)
         {
             <a href="/Home/Dashboard">My Documents</a>
@@ -68,7 +68,7 @@
         </div>
     </div>
 
- <script>
+<script>
     const hints = [
         {
             title: "Hint 1 — Getting Started",
@@ -87,7 +87,7 @@
     let currentHint = 0;
 
     function openHint() {
-        currentHint = parseInt(localStorage.getItem('hintLevel') || '0');
+        currentHint = 0;
         showHint();
         document.getElementById('hintOverlay').classList.add('active');
     }
@@ -104,7 +104,6 @@
     function nextHint() {
         if (currentHint < hints.length - 1) {
             currentHint++;
-            localStorage.setItem('hintLevel', currentHint);
             showHint();
         }
     }
