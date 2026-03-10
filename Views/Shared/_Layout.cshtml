@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — SecureDocs</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #333; }
+        nav { background: #1a3c5e; color: white; padding: 0 2rem; display: flex; align-items: center; height: 56px; gap: 2rem; }
+        nav a { color: #a8c8e8; text-decoration: none; font-size: 0.9rem; }
+        nav a:hover { color: white; }
+        nav .brand { font-weight: 700; font-size: 1.1rem; color: white; margin-right: auto; }
+        .container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+        .card { background: white; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.1); padding: 2rem; margin-bottom: 1.5rem; }
+        .btn { display: inline-block; padding: 0.5rem 1.4rem; border-radius: 5px; border: none; cursor: pointer; font-size: 0.9rem; text-decoration: none; }
+        .btn-primary { background: #1a3c5e; color: white; }
+        .btn-primary:hover { background: #254f7a; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th { background: #1a3c5e; color: white; padding: 0.6rem 1rem; text-align: left; }
+        td { padding: 0.6rem 1rem; border-bottom: 1px solid #eee; }
+        tr:hover td { background: #f8f9fa; }
+        .flag-box { background: #fdecea; border: 2px solid #e74c3c; border-radius: 6px; padding: 1.5rem; font-family: monospace; font-size: 1.1rem; color: #c0392b; text-align: center; margin: 1rem 0; }
+
+        /* Hint button */
+        .hint-btn { background: #f0c040; color: #333; border: none; padding: 0.4rem 1rem; border-radius: 5px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+        .hint-btn:hover { background: #e0b030; }
+
+        /* Hint overlay */
+        .hint-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .hint-overlay.active { display: flex; }
+        .hint-box { background: white; border-radius: 10px; padding: 2rem; max-width: 480px; width: 90%; box-shadow: 0 4px 24px rgba(0,0,0,0.2); }
+        .hint-box h3 { color: #1a3c5e; margin-bottom: 0.5rem; font-size: 1rem; }
+        .hint-box .hint-number { font-size: 0.75rem; color: #888; margin-bottom: 1rem; }
+        .hint-box p { font-size: 0.92rem; color: #444; line-height: 1.6; margin-bottom: 1.5rem; }
+        .hint-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
+        .hint-close { background: #eee; color: #333; border: none; padding: 0.5rem 1.2rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; }
+        .hint-next { background: #1a3c5e; color: white; border: none; padding: 0.5rem 1.2rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; }
+        .hint-next:hover { background: #254f7a; }
+        .hint-next:disabled { background: #aaa; cursor: not-allowed; }
+        .hint-used { font-size: 0.75rem; color: #c0392b; margin-top: 0.5rem; text-align: right; }
+    </style>
+</head>
+<body>
+    <nav>
+        <span class="brand">SecureDocs</span>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <a href="/Home/Dashboard">My Documents</a>
+            <button class="hint-btn" onclick="openHint()">Hint</button>
+            <a href="/Account/Logout">Logout (@User.Identity.Name)</a>
+        }
+    </nav>
+    <div class="container">
+        @RenderBody()
+    </div>
+
+    <!-- Hint Overlay -->
+    <div class="hint-overlay" id="hintOverlay">
+        <div class="hint-box">
+            <h3><span id="hintTitle"></span></h3>
+            <div class="hint-number" id="hintNumber"></div>
+            <p id="hintText"></p>
+            <div class="hint-actions">
+                <button class="hint-close" onclick="closeHint()">Close</button>
+                <button class="hint-next" id="nextBtn" onclick="nextHint()">Next Hint</button>
+            </div>
+        </div>
+    </div>
+
+ <script>
+    const hints = [
+        {
+            title: "Hint 1 — Getting Started",
+            text: "After logging in, click on any document. Look very carefully at the URL in your browser's address bar. What parameter does the application use to identify which document to load?"
+        },
+        {
+            title: "Hint 2 — The Right Question",
+            text: "The dashboard only shows YOUR documents. But does the server actually check whether you are allowed to view a document before returning it? What would happen if you changed the document ID in the URL to a number you didn't see on your dashboard?"
+        },
+        {
+            title: "Hint 3 — Find the Flag",
+            text: "Try requesting documents starting from id=1 and work your way up. There are more documents stored than what you can see on your dashboard. One of them is marked CONFIDENTIAL and contains the flag. The flag format is: FLAG{...}"
+        }
+    ];
+
+    let currentHint = 0;
+
+    function openHint() {
+        currentHint = parseInt(localStorage.getItem('hintLevel') || '0');
+        showHint();
+        document.getElementById('hintOverlay').classList.add('active');
+    }
+
+    function showHint() {
+        const h = hints[currentHint];
+        document.getElementById('hintTitle').textContent = h.title;
+        document.getElementById('hintNumber').textContent = 'Hint ' + (currentHint + 1) + ' of ' + hints.length;
+        document.getElementById('hintText').textContent = h.text;
+        document.getElementById('nextBtn').textContent = currentHint >= hints.length - 1 ? 'No more hints' : 'Next Hint';
+        document.getElementById('nextBtn').disabled = currentHint >= hints.length - 1;
+    }
+
+    function nextHint() {
+        if (currentHint < hints.length - 1) {
+            currentHint++;
+            localStorage.setItem('hintLevel', currentHint);
+            showHint();
+        }
+    }
+
+    function closeHint() {
+        document.getElementById('hintOverlay').classList.remove('active');
+    }
+</script>
+</body>
+</html>

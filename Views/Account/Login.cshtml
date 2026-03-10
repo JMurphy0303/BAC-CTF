@@ -1,0 +1,55 @@
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Login</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .login-box { background: white; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,.12); padding: 2.5rem; width: 100%; max-width: 380px; }
+        .logo { text-align: center; font-size: 1.5rem; font-weight: 700; color: #1a3c5e; margin-bottom: 0.25rem; }
+        .subtitle { text-align: center; color: #888; font-size: 0.85rem; margin-bottom: 2rem; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; color: #555; margin-bottom: 0.3rem; }
+        input { width: 100%; padding: 0.6rem 0.9rem; border: 1px solid #ddd; border-radius: 5px; font-size: 0.95rem; margin-bottom: 1.1rem; }
+        input:focus { outline: none; border-color: #1a3c5e; }
+        .btn { width: 100%; padding: 0.7rem; background: #1a3c5e; color: white; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; }
+        .btn:hover { background: #254f7a; }
+        .alert { background: #fdecea; border: 1px solid #e74c3c; color: #c0392b; padding: 0.7rem 1rem; border-radius: 5px; margin-bottom: 1rem; font-size: 0.88rem; }
+        .credentials { margin-top: 1.5rem; background: #f8f9fa; border: 1px solid #ddd; border-radius: 6px; padding: 1rem; font-size: 0.82rem; color: #555; }
+        .credentials strong { display: block; margin-bottom: 0.5rem; color: #333; font-size: 0.85rem; }
+        .credentials table { width: 100%; font-size: 0.82rem; }
+        .credentials td { padding: 3px 6px; }
+        .credentials td:first-child { font-weight: 600; color: #1a3c5e; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <div class="logo">Login</div>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert">@ViewBag.Error</div>
+        }
+
+        <form method="post" action="/Account/Login">
+            <label>Username</label>
+            <input type="text" name="username" autocomplete="off" />
+            <label>Password</label>
+            <input type="password" name="password" />
+            <button type="submit" class="btn">Sign In</button>
+        </form>
+
+        <div class="credentials">
+            <strong>Your Credentials</strong>
+            <table>
+                <tr><td>Username:</td><td>employee</td></tr>
+                <tr><td>Password:</td><td>password123</td></tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+@model List<CtfApp.Models.Document>
+@{
+    ViewData["Title"] = "My Documents";
+}
+
+<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+        <div>
+            <h2 style="color:#000000;font-size:1.15rem;margin-bottom:0.2rem">My Documents</h2>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <p style="color:#8b949e;font-size:0.9rem">No documents found in your workspace.</p>
+    }
+    else
+    {
+        <table>
+            <thead>
+                <tr><th>#</th><th>Title</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var doc in Model)
+                {
+                    <tr>
+                        <td style="color:#8b949e">@doc.Id</td>
+                        <td>@doc.Title</td>
+                        <td><a class="btn" href="/Home/ViewDocument?id=@doc.Id">Open</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
